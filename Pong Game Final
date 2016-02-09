@@ -1,0 +1,210 @@
+//C13431468
+//Thomas O'Connor
+
+// Global variables for the ball 
+float paddle1; 
+float distWALL = 620; 
+float ball_x; 
+float ball_y; 
+float ball_dir = 1; 
+float ball_size = 10; // Radius 
+float direction = 0; 
+float lastry; 
+float paddle2 =10;
+
+//variables for the paddle 
+int paddle_width = 8; 
+int paddle_height = 50; 
+int dist_wall = 15;
+
+int scoreLeft=0;
+int scoreRight=0;
+int scoreTextSize=40;
+int gameOver=0;
+int textY=50;
+
+void setup() 
+{ 
+  size(640, 500); 
+  rectMode(RADIUS); 
+  ellipseMode(RADIUS); 
+  noStroke(); 
+  smooth(); 
+  ball_y = height/2; 
+  ball_x = 1; 
+} 
+
+void draw() 
+{ 
+  
+  scores();
+  
+  if(gameOver==0)
+  {
+    background(0); 
+    ball_x += ball_dir * 1.0; 
+    ball_y += direction; 
+    if (ball_x > width+ball_size) 
+    { 
+      ball_x = -width/2 - ball_size; 
+      ball_y = random(0, height); 
+      direction = 0; 
+    } 
+  
+    // if the ball hits off the right paddle 
+    float position = width-dist_wall-paddle_width-ball_size; 
+    if (ball_x == position && ball_y > paddle2 - paddle_height - ball_size && ball_y < paddle2 + paddle_height + ball_size)
+    { 
+      ball_dir *= -1; 
+      if (paddle2 != paddle2-5)
+      { 
+        direction = (paddle2-paddle2-5); 
+        if (direction > 5)
+        { 
+          direction = ball_x; 
+        } 
+        if (direction < -5)
+        { 
+          direction = -5; 
+        } 
+       }
+       else
+       {
+         gameOverPop();
+       }
+       scoreRight++;
+     }
+  
+  
+    // If ball touches top or bottom, bounces
+    if (ball_y > height-ball_size)
+    { 
+      direction = direction * -1; 
+    } 
+    if (ball_y < ball_size)
+    { 
+      direction = direction * -1; 
+    } 
+    
+    
+    // if the ball hits the left paddle 
+    float position2 = width-distWALL+paddle_width+ball_size; 
+    if (ball_x == position2 && ball_y > paddle1 - paddle_height - ball_size && ball_y < paddle1 + paddle_height + ball_size)
+    { 
+      ball_dir *= -1; 
+      if (paddle1 != paddle1-5)
+      { 
+        direction = (paddle1-paddle1-5)/2.0; 
+        if (direction > 5)
+        { 
+          direction = 5; 
+        } 
+        if (direction < -5)
+        { 
+          direction = -5; 
+        }
+      }
+      
+      else
+      {
+       gameOverPop();
+      }
+      scoreLeft++;
+    }
+    
+    
+    // Draw ball 
+    fill(255); 
+    ellipse(ball_x, ball_y, ball_size, ball_size); 
+    //ball speed
+    frameRate(200);
+    // Drawing paddle1
+    fill(255,0,0); 
+    rect(width-dist_wall, paddle2, paddle_width, paddle_height);
+    //Drawing paddle2
+    fill(255,165,0);
+    rect(width-distWALL, paddle1, paddle_width, paddle_height); 
+  }
+  
+   else
+  {
+    gameOverPop();
+  }
+   if (gameOver==1)
+  {
+    background(100,100,200);
+    text("Game Over!",width/2,height/2);
+    text("CLICK TO RESTART",width/2,height/2+20);
+  }
+}
+
+  
+// controlling the paddles
+void keyPressed()
+{ 
+  if (keyCode == UP)
+  { 
+    lastry = paddle2; 
+    paddle2=paddle2-5;   
+  }
+  
+  if (keyCode == DOWN)
+  { 
+    lastry = paddle2; 
+    paddle2=paddle2+5;   
+  } 
+  
+  if (key == 'a')
+  { 
+    lastry = paddle1; 
+    paddle1=paddle1-5;    
+  }
+  
+  if (key == 's')
+  { 
+    lastry = paddle1; 
+    paddle1=paddle1+5; 
+  } 
+  
+  if (paddle2 <= 0) //stops paddle from leaving top of the screen 
+  { 
+    paddle2 = paddle2+5; 
+  } 
+  
+  if (paddle2 >= height-10) //stops paddle from leaving bottom of the screen 
+  { 
+    paddle2=height-15; 
+  } 
+  
+  if (paddle1 <=0) //stops paddle from leaving the top of the screen
+  {
+    paddle1 = paddle1+5;
+  }
+  
+  if (paddle1 >= height-10) //stops paddle from leaving the bottom of the screen
+  {
+    paddle1=height-15;
+  }
+  
+}
+
+
+void gameOverPop()
+{
+  gameOver=1;
+}
+
+
+void mouseClicked()
+{
+  gameOver=0;
+}
+
+
+void scores()
+{
+  textSize(scoreTextSize);
+  fill(255);
+  text(scoreLeft, width*.25 -scoreTextSize/2, textY); 
+  text(scoreRight,width*.75, textY); 
+}
